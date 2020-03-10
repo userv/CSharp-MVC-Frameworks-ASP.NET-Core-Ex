@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
+using PANDA.Data;
 using PANDA.Models;
 
 namespace PANDA.Common
@@ -12,11 +12,13 @@ namespace PANDA.Common
     {
         private static string DefaultAdminPassword = "admin123";
 
-        private static readonly Dictionary<string, PandaUserRole> roles = new Dictionary<string, PandaUserRole>()
+        private static readonly Dictionary<string, PandaUserRole> Roles = new Dictionary<string, PandaUserRole>()
         {
             {"Admin",new PandaUserRole("Admin") },
             {"User",new PandaUserRole("User")}  ,
         };
+
+        private static readonly string[] Statuses = { "Pending", "Shipped", "Delivered", "Acquired" };
 
         public static async void SeedDatabase(this IApplicationBuilder app)
         {
@@ -25,8 +27,9 @@ namespace PANDA.Common
             using (scope)
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<PandaUserRole>>();
-                var usermanager = scope.ServiceProvider.GetRequiredService<UserManager<PandaUser>>();
-                foreach (var role in roles)
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<PandaUser>>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<PandaDbContext>();
+                foreach (var role in Roles)
                 {
                     if (!await roleManager.RoleExistsAsync(role.Key))
                     {
@@ -34,6 +37,15 @@ namespace PANDA.Common
                     }
 
                 }
+                if (dbContext.PackageStatuses.Any())
+                {
+                    return;
+                }
+                foreach (var status in Statuses)
+                {
+                    await dbContext.PackageStatuses.AddAsync(new PackageStatus() {Name = status});
+                }
+                await dbContext.SaveChangesAsync();
             }
         }
     }

@@ -6,7 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+//using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -18,24 +18,24 @@ namespace PANDA.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<PandaUser> _signInManager;
-        private readonly UserManager<PandaUser> _userManager;
-        private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly PandaDbContext context;
+        private readonly SignInManager<PandaUser> signInManager;
+        private readonly UserManager<PandaUser> userManager;
+        private readonly ILogger<RegisterModel> logger;
+       // private readonly IEmailSender _emailSender;
+        private readonly PandaDbContext dbContext;
 
         public RegisterModel(
             UserManager<PandaUser> userManager,
             SignInManager<PandaUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
+          //  IEmailSender emailSender,
             PandaDbContext ctx)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-            this.context = ctx;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.logger = logger;
+          //  _emailSender = emailSender;
+            this.dbContext = ctx;
         }
 
         [BindProperty]
@@ -74,34 +74,34 @@ namespace PANDA.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new PandaUser { UserName = Input.Email, Email = Input.Email };
-                if (!this._userManager.Users.Any())
+                if (!this.userManager.Users.Any())
                 {
-                    result = await this._userManager.CreateAsync(user, Input.Password);
+                    result = await this.userManager.CreateAsync(user, Input.Password);
                     var role=new PandaUserRole("Admin");
-                    await this._userManager.AddToRoleAsync(user, "Admin");
+                    await this.userManager.AddToRoleAsync(user, "Admin");
                 }
                 else
                 {
-                    result = await _userManager.CreateAsync(user, Input.Password);
-                    await this._userManager.AddToRoleAsync(user, "User");
+                    result = await this.userManager.CreateAsync(user, Input.Password);
+                    await this.userManager.AddToRoleAsync(user, "User");
                 }
 
                 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    this.logger.LogInformation("User created a new account with password.");
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
                         values: new { userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                 //   await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                 //      $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await this.signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
                 foreach (var error in result.Errors)
