@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PANDA.Data;
 
 namespace PANDA.Data.Migrations
 {
     [DbContext(typeof(PandaDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200310100434_Added_PackageStatuses")]
+    partial class Added_PackageStatuses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,19 +145,19 @@ namespace PANDA.Data.Migrations
 
                     b.Property<DateTime?>("EstimatedDeliveryDate");
 
-                    b.Property<string>("PackageStatusId");
-
                     b.Property<string>("RecipientId");
 
                     b.Property<string>("ShippingAddress");
+
+                    b.Property<string>("StatusId");
 
                     b.Property<float>("Weight");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PackageStatusId");
-
                     b.HasIndex("RecipientId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Packages");
                 });
@@ -305,13 +307,13 @@ namespace PANDA.Data.Migrations
 
             modelBuilder.Entity("PANDA.Models.Package", b =>
                 {
-                    b.HasOne("PANDA.Models.PackageStatus", "Status")
-                        .WithMany()
-                        .HasForeignKey("PackageStatusId");
-
                     b.HasOne("PANDA.Models.PandaUser", "Recipient")
                         .WithMany("Packages")
                         .HasForeignKey("RecipientId");
+
+                    b.HasOne("PANDA.Models.PackageStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId");
                 });
 
             modelBuilder.Entity("PANDA.Models.PandaUser", b =>
