@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PANDA.Data;
+using PANDA.Models;
 using PANDA.ViewModels;
 
 namespace PANDA.Controllers
@@ -35,9 +36,8 @@ namespace PANDA.Controllers
         public ActionResult Create()
         {
             var recipients = this.dbContext.Users
-                .Select(x => new RecipientDropDownModel() { Id = x.Id, FullName = x.UserName }).ToList();
-            
-            var viewModel=new PackageCreateInputModel
+                .Select(x => new RecipientDropDownModel { Id = x.Id, FullName = x.UserName }).ToList();
+            var viewModel = new PackageCreateInputModel
             {
                 Recipients = recipients
             };
@@ -49,9 +49,23 @@ namespace PANDA.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PackageCreateInputModel inputModel)
         {
-            
+            if (!ModelState.IsValid)
+            {
+                return this.View(inputModel);
+            }
+            var package = new Package
+            {
+                Description = inputModel.Description,
+                Weight = inputModel.Weight,
+                ShippingAddress = inputModel.ShippingAddress,
+                Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Pending"),
+                RecipientId = inputModel.RecipientId
+            };
+            this.dbContext.Packages.Add(package);
+            this.dbContext.SaveChanges();
 
-            return View();
+            //TODO Redirect to details view
+            return View(package.Id);
 
         }
 

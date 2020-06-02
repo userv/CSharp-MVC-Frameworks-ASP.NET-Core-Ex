@@ -1,10 +1,48 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="jumbotron mt-3 bg-panda">
-    <h1 class="text-white">Welcome to PANDA Delivery Services.</h1>
-    <hr class="bg-white hr-2" />
-    <h3 class="text-white"><a asp-area="Identity" asp-page="/Account/Login">Login</a> if you have an account.</h3>
-    <h3 class="text-white"><a asp-area="Identity" asp-page="/Account/register">Register</a> if you don't.</h3>
-</div>
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="jumbotron mt-3 bg-panda">
+        <h1 class="text-white">Welcome to PANDA Delivery Services.</h1>
+        <hr class="bg-white hr-2" />
+        <h3 class="text-white"><a asp-area="Identity" asp-page="/Account/Login">Login</a> if you have an account.</h3>
+        <h3 class="text-white"><a asp-area="Identity" asp-page="/Account/register">Register</a> if you don't.</h3>
+    </div>
+}
+else
+{
+    <main class="mt-3">
+        <h1 class="text-center">Hello, @(User.IsInRole("Admin")?$"Administrator ":"")@User.Identity.Name!</h1>
+        <hr class="hr-2 bg-panda">
+        <div class="d-flex justify-content-between">
+            <div class="w-25 bg-white">
+                <h2 class="text-center">Pending</h2>
+                <div class="border-panda p-3">
+                    <div class="p-2 d-flex justify-content-around">
+                        <h4 class="w-75">IPhone XS Case</h4>
+                        <a href="" class="btn bg-panda text-white w-25">Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="w-25 bg-white">
+                <h2 class="text-center">Shipped</h2>
+                <div class="border-panda p-3">
+                    <div class="p-2 d-flex justify-content-around">
+                        <h4 class="w-75">1959 Irish Bourbon</h4>
+                        <a href="" class="btn bg-panda text-white w-25">Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="w-25 bg-white">
+                <h2 class="text-center">Delivered</h2>
+                <div class="border-panda p-3">
+                    <div class="p-2 d-flex justify-content-around">
+                        <h4 class="w-75">Dog Toy</h4>
+                        <a href="" class="btn bg-panda text-white w-25">Acquire</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+}

@@ -13,7 +13,8 @@ namespace PANDA.ViewModels
         public string Description { get; set; }
 
         public float Weight { get; set; }
-
+        
+        [Display(Name = "Shipping Address")]
         public string ShippingAddress { get; set; }
 
         [Display(Name="Recipient")]
