@@ -4,15 +4,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PANDA.Data;
 using PANDA.Models;
+using PANDA.ViewModels;
 
 namespace PANDA.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly PandaDbContext dbContext;
+
+        public HomeController(PandaDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
         public IActionResult Index()
         {
-            return this.View();
+            var packages = this.dbContext.Packages.Select(p => new PackageHomeViewModel()
+            {
+                Id = p.Id,
+                Description = p.Description,
+                Status = p.Status.Name
+            }).ToList();
+            return this.View(packages);
         }
 
         public IActionResult Privacy()

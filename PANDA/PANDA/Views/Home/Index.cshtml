@@ -1,5 +1,11 @@
-﻿@{
+﻿@using PANDA.ViewModels
+@model List<PackageHomeViewModel>
+@{
     ViewData["Title"] = "Home Page";
+
+    var pendingPackages = Model.Where(p => p.Status == "Pending").ToList();
+    var shippedPackages = Model.Where(p => p.Status == "Shipped").ToList();
+    var deliveredPackages = Model.Where(p => p.Status == "Delivered").ToList();
 }
 @if (!User.Identity.IsAuthenticated)
 {
@@ -19,28 +25,37 @@ else
             <div class="w-25 bg-white">
                 <h2 class="text-center">Pending</h2>
                 <div class="border-panda p-3">
-                    <div class="p-2 d-flex justify-content-around">
-                        <h4 class="w-75">IPhone XS Case</h4>
-                        <a href="" class="btn bg-panda text-white w-25">Details</a>
-                    </div>
+                    @foreach (var package in pendingPackages)
+                    {
+                        <div class="p-2 d-flex justify-content-around">
+                            <h4 class="w-75">@package.Description</h4>
+                            <a href="/Packages/Details/@package.Id" class="btn bg-panda text-white w-25">Details</a>
+                        </div>
+                    }
                 </div>
             </div>
             <div class="w-25 bg-white">
                 <h2 class="text-center">Shipped</h2>
                 <div class="border-panda p-3">
+                @foreach (var package in shippedPackages)
+                {
                     <div class="p-2 d-flex justify-content-around">
-                        <h4 class="w-75">1959 Irish Bourbon</h4>
-                        <a href="" class="btn bg-panda text-white w-25">Details</a>
+                        <h4 class="w-75">@package.Description</h4>
+                        <a href="/Packages/Details/@package.Id" class="btn bg-panda text-white w-25">Details</a>
                     </div>
+                }
                 </div>
             </div>
             <div class="w-25 bg-white">
                 <h2 class="text-center">Delivered</h2>
                 <div class="border-panda p-3">
+                @foreach (var package in deliveredPackages)
+                {
                     <div class="p-2 d-flex justify-content-around">
-                        <h4 class="w-75">Dog Toy</h4>
-                        <a href="" class="btn bg-panda text-white w-25">Acquire</a>
+                        <h4 class="w-75">@package.Description</h4>
+                        <a href="/Packages/Details/@package.Id" class="btn bg-panda text-white w-25">Acquire</a>
                     </div>
+                }
                 </div>
             </div>
         </div>
