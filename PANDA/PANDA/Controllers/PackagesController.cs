@@ -27,9 +27,10 @@ namespace PANDA.Controllers
         }
 
         // GET: Packages/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
-            return View();
+            var package = this.dbContext.Packages.FirstOrDefault(p => p.Id == id);
+            return View(package);
         }
 
         // GET: Packages/Create
@@ -41,7 +42,7 @@ namespace PANDA.Controllers
             {
                 Recipients = recipients
             };
-            return View(viewModel);
+            return this.View(viewModel);
         }
 
         // POST: Packages/Create
@@ -65,7 +66,8 @@ namespace PANDA.Controllers
             this.dbContext.SaveChanges();
 
             //TODO Redirect to details view
-            return View(package.Id);
+            return this.Redirect("/Home/Index");
+            //  return View(package.Id);
 
         }
 
