@@ -67,8 +67,40 @@ namespace PANDA.Controllers
 
             //TODO Redirect to details view
             return this.Redirect("/Home/Index");
-            //  return View(package.Id);
+        }
 
+        public ActionResult Pending()
+        {
+            var pendingPackages = this.dbContext.Packages
+                .Where(p => p.Status.Name == "Pending")
+                .Select(p => new PackagePendingViewModel
+                {
+                    Id = p.Id,
+                    Description = p.Description,
+                    Status = p.Status,
+                    Recipient = p.Recipient,
+                    ShippingAddress = p.ShippingAddress,
+                    Weight = p.Weight,
+
+                }).ToList();
+
+            return this.View(pendingPackages);
+        }
+
+        public ActionResult Shipped()
+        {
+            return this.View();
+        }
+
+        public ActionResult Delivered()
+        {
+            return this.View();
+        }
+        //TODO Add Ship action  logic
+        public ActionResult Ship(string id)
+        {
+
+            return this.RedirectToAction("Shipped");
         }
 
         // GET: Packages/Edit/5

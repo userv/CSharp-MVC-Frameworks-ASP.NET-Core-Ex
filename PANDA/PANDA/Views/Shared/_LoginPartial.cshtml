@@ -2,28 +2,58 @@
 @inject SignInManager<PandaUser> SignInManager
 @inject UserManager<PandaUser> UserManager
 
-    <ul class="navbar-nav">
-        @if (SignInManager.IsSignedIn(User))
-        {
-
-            
+<ul class="navbar-nav">
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link nav-link-white active" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index","Home",new {area=""})">Login</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link nav-link-white active" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link nav-link-white active" href="/my-receipts">Receipts</a>
+                <a class="nav-link nav-link-white active" asp-controller="Packages" asp-action="Pending">Pending</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-white active" asp-controller="Packages" asp-action="Shipped">Shipped</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-white active" asp-controller="Packages" asp-action="Delivered">Delivered</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-white active" asp-controller="Packages" asp-action="Create">Package</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link nav-link-white active" asp-controller="Home" asp-action="Index">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-white active" asp-controller="Receipts" asp-action="Index">Receipts</a>
             </li>
             <li class="nav-item">
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                     <button type="submit" class="nav-link nav-link-white active">Logout</button>
-                </form>
+                </form>>
             </li>
-        }
-        else
-        {
-            <li class="nav-item">
-                <a class="nav-link nav-link-white active" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index","Home",new {area=""})">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link nav-link-white active" asp-area="Identity" asp-page="/Account/Register">Register</a>
-            </li>
-
-        }
-    </ul>
+        </ul>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link nav-link-white active" asp-controller="Home" asp-action="Index">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link nav-link-white active" asp-controller="Receipts" asp-action="Index">Receipts</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link nav-link-white active">Logout</button>
+            </form>
+        </li>
+    }
+</ul>
