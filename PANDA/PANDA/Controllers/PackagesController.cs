@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PANDA.Data;
 using PANDA.Models;
 using PANDA.ViewModels;
@@ -29,8 +30,21 @@ namespace PANDA.Controllers
         // GET: Packages/Details/5
         public ActionResult Details(string id)
         {
-            var package = this.dbContext.Packages.FirstOrDefault(p => p.Id == id);
-            return View(package);
+            Package package = this.dbContext.Packages
+                .Include(p => p.Status)
+                .Include(p =>p.Recipient)
+                .SingleOrDefault(p => p.Id == id);
+
+            PackageDetailsViewModel packageDetails = new PackageDetailsViewModel
+            {
+                Status = package.Status.Name,
+                ShippingAddress = package.ShippingAddress,
+                Recipient = package.Recipient.UserName,
+                Description = package.Description,
+                EstimatedDeliveryDate = package.EstimatedDeliveryDate,
+                Weight = package.Weight
+            };
+            return View(packageDetails);
         }
 
         // GET: Packages/Create
@@ -99,7 +113,11 @@ namespace PANDA.Controllers
         //TODO Add Ship action  logic
         public ActionResult Ship(string id)
         {
-
+            var shippedPackage = this.dbContext.Packages.Find(id);
+            shippedPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Shipped");
+            shippedPackage.EstimatedDeliveryDate = DateTime.UtcNow.AddDays(new Random().Next(20, 40));
+            this.dbContext.Packages.Update(shippedPackage);
+            this.dbContext.SaveChanges();
             return this.RedirectToAction("Shipped");
         }
 
