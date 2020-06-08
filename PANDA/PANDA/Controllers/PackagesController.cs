@@ -95,22 +95,10 @@ namespace PANDA.Controllers
                     Recipient = p.Recipient,
                     ShippingAddress = p.ShippingAddress,
                     Weight = p.Weight,
-
                 }).ToList();
 
             return this.View(pendingPackages);
         }
-
-        public ActionResult Shipped()
-        {
-            return this.View();
-        }
-
-        public ActionResult Delivered()
-        {
-            return this.View();
-        }
-        //TODO Add Ship action  logic
         public ActionResult Ship(string id)
         {
             var shippedPackage = this.dbContext.Packages.Find(id);
@@ -120,51 +108,45 @@ namespace PANDA.Controllers
             this.dbContext.SaveChanges();
             return this.RedirectToAction("Shipped");
         }
+        public ActionResult Shipped()
+        {
+            var shippedPackages = this.dbContext.Packages
+                .Where(p => p.Status.Name == "Shipped")
+                .Select(p => new PackageShippedViewModel
+                {
+                    Id = p.Id,
+                    Description = p.Description,
+                    EstimatedDeliveryDate = p.EstimatedDeliveryDate,
+                    Recipient = p.Recipient,
+                    Weight = p.Weight,
 
-        // GET: Packages/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    return View();
-        //}
+                }).ToList();
+            return this.View(shippedPackages);
+        }
 
-        //// POST: Packages/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add update logic here
+        public ActionResult Deliver(string id)
+        {
+            var deliveredPackage = this.dbContext.Packages.Find(id);
+            deliveredPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Delivered");
+            this.dbContext.Packages.Update(deliveredPackage);
+            this.dbContext.SaveChanges();
+            return this.RedirectToAction("Delivered");
+        }
+        public ActionResult Delivered(string id)
+        {
+            var deliveredPackages = this.dbContext.Packages
+                .Where(p => p.Status.Name == "Delivered")
+                .Select(p => new PackageDeliveredViewModel
+                {
+                    Id = p.Id,
+                    Description = p.Description,
+                    EstimatedDeliveryDate = p.EstimatedDeliveryDate,
+                    Recipient = p.Recipient,
+                    Weight = p.Weight,
 
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        //// GET: Packages/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Packages/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+                }).ToList();
+            return this.View(deliveredPackages);
+        }
+       
     }
 }
