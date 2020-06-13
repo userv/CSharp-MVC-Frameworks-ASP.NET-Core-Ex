@@ -53,7 +53,7 @@ else
                 {
                     <div class="p-2 d-flex justify-content-around">
                         <h4 class="w-75">@package.Description</h4>
-                        <a href="/Packages/Details/@package.Id" class="btn bg-panda text-white w-25">Acquire</a>
+                        <a asp-controller="Packages" asp-action="Acquire" asp-route-id="@package.Id" class="btn bg-panda text-white w-25">Acquire</a>
                     </div>
                 }
                 </div>

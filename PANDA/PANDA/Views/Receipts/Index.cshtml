@@ -4,56 +4,32 @@
     ViewData["Title"] = "View";
 }
 
-<h1>View</h1>
-
-<p>
-    <a asp-action="Index">Receipts</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IssuedOn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RecipientId)
-            </th>
-            <th>
-               
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fee)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IssuedOn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RecipientId)
-            </td>
-            <td>
-               
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<h1 class="text-center">My Receipts</h1>
+<hr class="hr-2 bg-panda">
+<div class="d-flex justify-content-between">
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr class="row">
+                <th scope="col" class="col-lg-5 d-flex justify-content-center"><h3>Id</h3></th>
+                <th scope="col" class="col-lg-2 d-flex justify-content-center"><h3>Fee</h3></th>
+                <th scope="col" class="col-lg-2 d-flex justify-content-center"><h3>Issued On</h3></th>
+                <th scope="col" class="col-lg-2 d-flex justify-content-center"><h3>Recipient</h3></th>
+                <th scope="col" class="col-lg-1 d-flex justify-content-center"><h3>Actions</h3></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var receipt in Model)
+            {
+                <tr class="row">
+                    <th scope="row" class="col-lg-5 d-flex justify-content-center"><h5>@receipt.Id</h5></th>
+                    <td class="col-lg-2 d-flex justify-content-center"><h5>$@receipt.Fee</h5></td>
+                    <td class="col-lg-2 d-flex justify-content-center"><h5>@receipt.IssuedOn.ToString("MM/dd/yyyy")</h5></td>
+                    <td class="col-lg-2 d-flex justify-content-center"><h5>@receipt.Recipient.UserName</h5></td>
+                    <td class="col-lg-1 d-flex justify-content-center">
+                        <a href="/ship" class="btn bg-panda text-white">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

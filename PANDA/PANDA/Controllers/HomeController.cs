@@ -16,7 +16,7 @@ namespace PANDA.Controllers
         private readonly PandaDbContext dbContext;
         private readonly UserManager<PandaUser> userManager;
 
-        public HomeController(PandaDbContext dbContext,UserManager<PandaUser> userManager)
+        public HomeController(PandaDbContext dbContext, UserManager<PandaUser> userManager)
         {
             this.dbContext = dbContext;
             this.userManager = userManager;
@@ -25,17 +25,17 @@ namespace PANDA.Controllers
         {
             if (!this.User.Identity.IsAuthenticated)
             {
-                return this.View( new List<PackageHomeViewModel>{});
+                return this.View(new List<PackageHomeViewModel> { });
             }
             var userId = this.userManager.GetUserId(this.User);
             var packages = this.dbContext.Packages
-                .Where(p => p.RecipientId==userId)
+                .Where(p => p.RecipientId == userId)
                 .Select(p => new PackageHomeViewModel()
-            {
-                Id = p.Id,
-                Description = p.Description,
-                Status = p.Status.Name
-            }).ToList();
+                {
+                    Id = p.Id,
+                    Description = p.Description,
+                    Status = p.Status.Name
+                }).ToList();
             return this.View(packages);
         }
 
@@ -48,11 +48,6 @@ namespace PANDA.Controllers
         public IActionResult Error()
         {
             return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
-        }
-
-        public IActionResult Test()
-        {
-            return this.View();
         }
     }
 }

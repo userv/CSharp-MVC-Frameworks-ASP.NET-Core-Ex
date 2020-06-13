@@ -22,17 +22,17 @@ namespace PANDA.Controllers
         }
 
         // GET: Packages
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
 
         // GET: Packages/Details/5
-        public ActionResult Details(string id)
+        public IActionResult Details(string id)
         {
             Package package = this.dbContext.Packages
                 .Include(p => p.Status)
-                .Include(p =>p.Recipient)
+                .Include(p => p.Recipient)
                 .SingleOrDefault(p => p.Id == id);
 
             PackageDetailsViewModel packageDetails = new PackageDetailsViewModel
@@ -48,7 +48,7 @@ namespace PANDA.Controllers
         }
 
         // GET: Packages/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             var recipients = this.dbContext.Users
                 .Select(x => new RecipientDropDownModel { Id = x.Id, FullName = x.UserName }).ToList();
@@ -62,7 +62,7 @@ namespace PANDA.Controllers
         // POST: Packages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(PackageCreateInputModel inputModel)
+        public IActionResult Create(PackageCreateInputModel inputModel)
         {
             if (!ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace PANDA.Controllers
             return this.Redirect("/Home/Index");
         }
 
-        public ActionResult Pending()
+        public IActionResult Pending()
         {
             var pendingPackages = this.dbContext.Packages
                 .Where(p => p.Status.Name == "Pending")
@@ -99,7 +99,7 @@ namespace PANDA.Controllers
 
             return this.View(pendingPackages);
         }
-        public ActionResult Ship(string id)
+        public IActionResult Ship(string id)
         {
             var shippedPackage = this.dbContext.Packages.Find(id);
             shippedPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Shipped");
@@ -108,7 +108,7 @@ namespace PANDA.Controllers
             this.dbContext.SaveChanges();
             return this.RedirectToAction("Shipped");
         }
-        public ActionResult Shipped()
+        public IActionResult Shipped()
         {
             var shippedPackages = this.dbContext.Packages
                 .Where(p => p.Status.Name == "Shipped")
@@ -124,7 +124,7 @@ namespace PANDA.Controllers
             return this.View(shippedPackages);
         }
 
-        public ActionResult Deliver(string id)
+        public IActionResult Deliver(string id)
         {
             var deliveredPackage = this.dbContext.Packages.Find(id);
             deliveredPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Delivered");
@@ -132,7 +132,7 @@ namespace PANDA.Controllers
             this.dbContext.SaveChanges();
             return this.RedirectToAction("Delivered");
         }
-        public ActionResult Delivered(string id)
+        public IActionResult Delivered(string id)
         {
             var deliveredPackages = this.dbContext.Packages
                 .Where(p => p.Status.Name == "Delivered")
@@ -147,6 +147,14 @@ namespace PANDA.Controllers
                 }).ToList();
             return this.View(deliveredPackages);
         }
-       
+
+        public IActionResult Acquire(string id)
+        {
+            var acquiredPackage = this.dbContext.Packages.Find(id);
+            acquiredPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Acquired");
+            this.dbContext.Packages.Update(acquiredPackage);
+            this.dbContext.SaveChanges();
+            return this.RedirectToAction("Create", "Receipts", new { id = id });
+        }
     }
 }
