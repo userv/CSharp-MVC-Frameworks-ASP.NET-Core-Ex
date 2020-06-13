@@ -26,7 +26,7 @@
                     <td class="col-lg-2 d-flex justify-content-center"><h5>@receipt.IssuedOn.ToString("MM/dd/yyyy")</h5></td>
                     <td class="col-lg-2 d-flex justify-content-center"><h5>@receipt.Recipient.UserName</h5></td>
                     <td class="col-lg-1 d-flex justify-content-center">
-                        <a href="/ship" class="btn bg-panda text-white">Details</a>
+                        <a asp-controller="Receipts" asp-action="Details" asp-route-id="@receipt.Id" class="btn bg-panda text-white">Details</a>
                     </td>
                 </tr>
             }
