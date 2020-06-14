@@ -37,7 +37,7 @@ namespace PANDA.Controllers
                     Recipient = r.Recipient,
 
                 }).ToList();
-            return View(receipts);
+            return this.View(receipts);
         }
 
 
@@ -57,7 +57,7 @@ namespace PANDA.Controllers
                 Recipient = receipt.Recipient,
                 ShippingAddress = receipt.Package.ShippingAddress,
             };
-            return View(receiptDetail);
+            return this.View(receiptDetail);
         }
 
 

@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PANDA.Models
 {
-    public class PandaUser : IdentityUser
+    public sealed class PandaUser : IdentityUser
     {
         public PandaUser()
         {
@@ -23,9 +23,6 @@ namespace PANDA.Models
         public ICollection<Package> Packages { get; set; }
         public ICollection<Receipt> Receipts { get; set; }
         public PandaUserRole Role { get; set; }
-       
         
-        //
-       // public ICollection<PandaUserRole> Roles { get; set; }
     }
 }

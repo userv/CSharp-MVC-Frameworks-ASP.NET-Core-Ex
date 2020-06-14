@@ -64,25 +64,25 @@ namespace PANDA.Areas.Identity.Pages.Account
 
         public void OnGet(string returnUrl = null)
         {
-            ReturnUrl = returnUrl;
+            this.ReturnUrl = returnUrl;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             IdentityResult result;
-            returnUrl = returnUrl ?? Url.Content("~/");
-            if (ModelState.IsValid)
+            returnUrl = returnUrl ?? this.Url.Content("~/");
+            if (this.ModelState.IsValid)
             {
-                var user = new PandaUser { UserName = Input.Email, Email = Input.Email };
+                var user = new PandaUser { UserName = this.Input.Email, Email = this.Input.Email };
                 if (!this.userManager.Users.Any())
                 {
-                    result = await this.userManager.CreateAsync(user, Input.Password);
+                    result = await this.userManager.CreateAsync(user, this.Input.Password);
                     var role=new PandaUserRole("Admin");
                     await this.userManager.AddToRoleAsync(user, "Admin");
                 }
                 else
                 {
-                    result = await this.userManager.CreateAsync(user, Input.Password);
+                    result = await this.userManager.CreateAsync(user, this.Input.Password);
                     await this.userManager.AddToRoleAsync(user, "User");
                 }
 
@@ -92,26 +92,26 @@ namespace PANDA.Areas.Identity.Pages.Account
                     this.logger.LogInformation("User created a new account with password.");
 
                     var code = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Page(
+                    var callbackUrl = this.Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
                         values: new { userId = user.Id, code = code },
-                        protocol: Request.Scheme);
+                        protocol: this.Request.Scheme);
 
                  //   await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                  //      $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     await this.signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
+                    return this.LocalRedirect(returnUrl);
                 }
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    this.ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
             // If we got this far, something failed, redisplay form
-            return Page();
+            return this.Page();
         }
     }
 }

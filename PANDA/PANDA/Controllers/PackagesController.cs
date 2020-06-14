@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PANDA.Data;
@@ -21,20 +19,13 @@ namespace PANDA.Controllers
 
         }
 
-        // GET: Packages
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        // GET: Packages/Details/5
         public IActionResult Details(string id)
         {
             Package package = this.dbContext.Packages
                 .Include(p => p.Status)
                 .Include(p => p.Recipient)
                 .SingleOrDefault(p => p.Id == id);
-
+            if (package == null) return this.Redirect("/Home/Index");
             PackageDetailsViewModel packageDetails = new PackageDetailsViewModel
             {
                 Status = package.Status.Name,
@@ -44,10 +35,9 @@ namespace PANDA.Controllers
                 EstimatedDeliveryDate = package.EstimatedDeliveryDate,
                 Weight = package.Weight
             };
-            return View(packageDetails);
+            return this.View(packageDetails);
         }
-
-        // GET: Packages/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var recipients = this.dbContext.Users
@@ -59,12 +49,12 @@ namespace PANDA.Controllers
             return this.View(viewModel);
         }
 
-        // POST: Packages/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(PackageCreateInputModel inputModel)
         {
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
                 return this.View(inputModel);
             }
@@ -83,6 +73,7 @@ namespace PANDA.Controllers
             return this.Redirect("/Home/Index");
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Pending()
         {
             var pendingPackages = this.dbContext.Packages
@@ -99,6 +90,8 @@ namespace PANDA.Controllers
 
             return this.View(pendingPackages);
         }
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Ship(string id)
         {
             var shippedPackage = this.dbContext.Packages.Find(id);
@@ -124,6 +117,7 @@ namespace PANDA.Controllers
             return this.View(shippedPackages);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Deliver(string id)
         {
             var deliveredPackage = this.dbContext.Packages.Find(id);
@@ -132,6 +126,8 @@ namespace PANDA.Controllers
             this.dbContext.SaveChanges();
             return this.RedirectToAction("Delivered");
         }
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Delivered(string id)
         {
             var deliveredPackages = this.dbContext.Packages
@@ -154,7 +150,7 @@ namespace PANDA.Controllers
             acquiredPackage.Status = this.dbContext.PackageStatuses.FirstOrDefault(x => x.Name == "Acquired");
             this.dbContext.Packages.Update(acquiredPackage);
             this.dbContext.SaveChanges();
-            return this.RedirectToAction("Create", "Receipts", new { id = id });
+            return this.RedirectToAction("Create", "Receipts", new { id });
         }
     }
 }
