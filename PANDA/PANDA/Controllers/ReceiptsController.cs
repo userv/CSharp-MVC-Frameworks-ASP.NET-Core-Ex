@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PANDA.Data;
@@ -14,23 +15,28 @@ namespace PANDA.Controllers
     public class ReceiptsController : Controller
     {
         private readonly PandaDbContext dbContext;
+        private readonly UserManager<PandaUser> userManager;
 
-        public ReceiptsController(PandaDbContext dbContext)
+        public ReceiptsController(PandaDbContext dbContext, UserManager<PandaUser> userManager)
         {
             this.dbContext = dbContext;
+            this.userManager = userManager;
         }
         // GET: ReceiptsController
+
         public IActionResult Index()
         {
-            var receipts = this.dbContext.Receipts.Select(r => new ReceiptViewModel
-            {
-                Id = r.Id,
-                Fee = r.Fee,
-                IssuedOn = r.IssuedOn,
-                RecipientId = r.RecipientId,
-                Recipient = r.Recipient,
+            var receipts = this.dbContext.Receipts
+                .Where(r => r.RecipientId == this.userManager.GetUserId(this.User))
+                .Select(r => new ReceiptViewModel
+                {
+                    Id = r.Id,
+                    Fee = r.Fee,
+                    IssuedOn = r.IssuedOn,
+                    RecipientId = r.RecipientId,
+                    Recipient = r.Recipient,
 
-            }).ToList();
+                }).ToList();
             return View(receipts);
         }
 
@@ -69,7 +75,7 @@ namespace PANDA.Controllers
             };
             this.dbContext.Receipts.Add(receipt);
             this.dbContext.SaveChanges();
-            return this.View("Details");
+            return this.RedirectToAction("Details",new {id=receipt.Id});
         }
 
 
